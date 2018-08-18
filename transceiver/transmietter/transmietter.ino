@@ -18,7 +18,7 @@ void setup() {
   radio.stopListening();
 }
 void loop() {
-  const char text[] = "Hello World";
+  const char text[] = "Hola que tal?";
   radio.write(&text, sizeof(text));
   delay(1000);
 }
