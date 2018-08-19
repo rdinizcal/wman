@@ -7,10 +7,12 @@
 
 */
 #include <SPI.h>
-#include "nRF24L01.h"
-#include "RF24.h"
+#include <RF24.h>
+#include <nRF24L01.h>
 
 RF24 radio(7, 8); // CE, CSN
+const byte address[6] = "00001";
+
 byte statusLed    = 13;
 
 byte sensorInterrupt = 0;  // 0 = digital pin 2
@@ -46,14 +48,17 @@ void setup()
   flowMilliLitres   = 0;
   totalMilliLitres  = 0;
   oldTime           = 0;
-
+  
+  radio.begin();
+  radio.openWritingPipe(address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.stopListening();
 }
 /**
    Main program loop
 */
 void loop()
 {
-
   if ((millis() - oldTime) > 1000)   // Only process counters once per second
   {
     // Disable the interrupt while calculating flow rate and sending the value to
@@ -93,14 +98,17 @@ void loop()
     Serial.print("Output Liquid Quantity: ");
     Serial.print(totalMilliLitres);
     Serial.println("mL");
-
-    
     
     // Reset the pulse counter so we can start incrementing again
     pulseCount = 0;
 
     // Enable the interrupt again now that we've finished sending output
     attachInterrupt(sensorInterrupt, pulseCounter, FALLING);
+    
+    
+    const char text[] = "Alou";
+    radio.write(text,sizeof(text));
+    delay(1000);
   }
 }
 
@@ -111,19 +119,4 @@ void pulseCounter()
 {
   // Increment the pulse counter
   pulseCount++;
-}
-
-
-
-const byte address[6] = "00001";
-void setup() {
-  radio.begin();
-  radio.openWritingPipe(address);
-  radio.setPALevel(RF24_PA_MIN);
-  radio.stopListening();
-}
-void loop() {
-  const char text[] = "Hola que tal?";
-  radio.write(&text, sizeof(text));
-  delay(1000);
 }
