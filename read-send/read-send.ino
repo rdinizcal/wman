@@ -59,8 +59,8 @@ void setup()
 */
 void loop()
 {
-  if ((millis() - oldTime) > 1000)   // Only process counters once per second
-  {
+  if ((millis() - oldTime) > 1000){   // Only process counters once per second
+ 
     // Disable the interrupt while calculating flow rate and sending the value to
     // the host
     detachInterrupt(sensorInterrupt);
@@ -101,13 +101,14 @@ void loop()
     
     // Reset the pulse counter so we can start incrementing again
     pulseCount = 0;
-
+    
     // Enable the interrupt again now that we've finished sending output
     attachInterrupt(sensorInterrupt, pulseCounter, FALLING);
-    
-    
-    const char text[] = "Alou";
+
+    char text[4];
+    sprintf (text, "%03i", int(flowRate));
     radio.write(text,sizeof(text));
+    
     delay(1000);
   }
 }
@@ -115,8 +116,7 @@ void loop()
 /*
   Insterrupt Service Routine
 */
-void pulseCounter()
-{
+void pulseCounter(){
   // Increment the pulse counter
   pulseCount++;
 }
