@@ -105,8 +105,8 @@ void loop()
     // Enable the interrupt again now that we've finished sending output
     attachInterrupt(sensorInterrupt, pulseCounter, FALLING);
 
-    char text[4];
-    sprintf (text, "%03i", int(flowRate));
+    char text[10];
+    sprintf (text, "%03i,%04i", int(flowRate),totalMilliLitres);
     radio.write(text,sizeof(text));
     
     delay(1000);
