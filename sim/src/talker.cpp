@@ -1,13 +1,127 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
 
 #include <sstream>
+
+double get_data(int curr_state) {
+  
+  double ans = -1;
+
+  switch (curr_state){
+    case 0:
+      ans = (rand()%20)/100.0; /*ans = [0,0.19]*/
+      break;
+    case 1:
+      ans = (rand()%20+20)/100.0; /*ans = [0.20,0.39]*/
+      break;
+    case 2:
+      ans = (rand()%20+40)/100.0; /*ans = [0.40,0.59]*/
+      break;
+    case 3:
+      ans = (rand()%20+60)/100.0; /*ans = [0.60,0.79]*/
+      break;
+    case 4:
+      ans = (rand()%20+80)/100.0; /*ans = [0.80,0.99]*/
+      break;
+    default:
+      throw "Current state not recognized, couldn't retrieve data.";
+      break;
+  }
+
+  return ans;
+}
+
+int change_state (int curr_state) {
+
+  int new_state;
+  int p = (rand()%100)+1;
+
+  switch (curr_state){
+    case 0:
+      if (p <= 70){
+        new_state = 0;
+      } else if (p <= 90) {
+        new_state = 1;
+      } else if (p <= 97) {
+        new_state = 2;
+      } else if (p <= 100) {
+        new_state = 3;
+      } else {
+        throw "Probability out of bounds!";
+      }
+      break;
+    case 1:
+      if (p <= 70){
+        new_state = 1;
+      } else if (p <= 80) {
+        new_state = 0;
+      } else if (p <= 90) {
+        new_state = 2;
+      } else if (p <= 95) {
+        new_state = 3;
+      } else if (p <= 100) {
+        new_state = 4;
+      } else {
+        throw "Probability out of bounds!";
+      }
+      break;
+    case 2:
+      if (p <= 70){
+        new_state = 2;
+      } else if (p <= 80) {
+        new_state = 1;
+      } else if (p <= 90) {
+        new_state = 3;
+      } else if (p <= 95) {
+        new_state = 0;
+      } else if (p <= 100) {
+        new_state = 4;
+      } else {
+        throw "Probability out of bounds!";
+      }
+      break;
+    case 3:
+      if (p <= 70){
+        new_state = 3;
+      } else if (p <= 80) {
+        new_state = 2;
+      } else if (p <= 90) {
+        new_state = 4;
+      } else if (p <= 95) {
+        new_state = 1;
+      } else if (p <= 100) {
+        new_state = 0;
+      } else {
+        throw "Probability out of bounds!";
+      }
+      break;
+    case 4:
+      if (p <= 70){
+        new_state = 4;
+      } else if (p <= 90) {
+        new_state = 3;
+      } else if (p <= 97) {
+        new_state = 2;
+      } else if (p <= 100) {
+        new_state = 1;
+      } else {
+        throw "Probability out of bounds!";
+      }
+      break;
+    default:
+      throw "Current state not recognized, couldn't retrieve data.";
+      break;
+  }
+
+  return new_state;
+}
 
 /**
  * This tutorial demonstrates simple sending of messages over the ROS system.
  */
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   /**
    * The ros::init() function needs to see argc and argv so that it can perform
    * any ROS arguments and name remapping that were provided at the command line.
@@ -48,11 +162,14 @@ int main(int argc, char **argv)
 
   ros::Rate loop_rate(10);
 
+  srand(time(NULL));
   /**
    * A count of how many messages we have sent. This is used to create
    * a unique string for each message.
    */
   int count = 0;
+  int curr_state = 0;
+  double sensor_data = 0.0;
   while (ros::ok())
   {
     /**
@@ -60,8 +177,11 @@ int main(int argc, char **argv)
      */
     std_msgs::String msg;
 
+    curr_state = change_state(curr_state);
+    sensor_data = get_data(curr_state);
+
     std::stringstream ss;
-    ss << "hello world " << count;
+    ss << sensor_data;
     msg.data = ss.str();
 
     ROS_INFO("%s", msg.data.c_str());
