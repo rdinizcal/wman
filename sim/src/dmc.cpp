@@ -1,11 +1,12 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+
+#include <sstream>
+#include <vector>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 
-#include <sstream>
-
-double get_data(int curr_state) {
+double gen_data(int curr_state) {
   
   double ans = -1;
 
@@ -29,6 +30,8 @@ double get_data(int curr_state) {
       throw "Current state not recognized, couldn't retrieve data.";
       break;
   }
+
+  ans *= 24.85; // Scaling factor: (Qmax - Qmin)/100, Qmax = 2500 and Qmin = 15
 
   return ans;
 }
@@ -132,7 +135,7 @@ int main(int argc, char **argv) {
    * You must call one of the versions of ros::init() before using any other
    * part of the ROS system.
    */
-  ros::init(argc, argv, "talker");
+  ros::init(argc, argv, "dmc");
 
   /**
    * NodeHandle is the main access point to communications with the ROS system.
@@ -158,46 +161,56 @@ int main(int argc, char **argv) {
    * than we can send them, the number here specifies how many messages to
    * buffer up before throwing some away.
    */
-  ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
+  ros::Publisher hydro1 = n.advertise<std_msgs::String>("hydro1_topic", 1000);
+  ros::Publisher hydro2 = n.advertise<std_msgs::String>("hydro2_topic", 1000);
+  ros::Publisher hydro3 = n.advertise<std_msgs::String>("hydro3_topic", 1000);
+  ros::Publisher hydro4 = n.advertise<std_msgs::String>("hydro4_topic", 1000);
+  ros::Publisher hydro5 = n.advertise<std_msgs::String>("hydro5_topic", 1000);
 
   ros::Rate loop_rate(10);
 
   srand(time(NULL));
-  /**
-   * A count of how many messages we have sent. This is used to create
-   * a unique string for each message.
-   */
-  int count = 0;
   int curr_state = 0;
   double sensor_data = 0.0;
-  while (ros::ok())
-  {
-    /**
-     * This is a message object. You stuff it with data, and then publish it.
-     */
-    std_msgs::String msg;
+  while (ros::ok()) {
 
     curr_state = change_state(curr_state);
-    sensor_data = get_data(curr_state);
+    sensor_data = gen_data(curr_state);
+    ROS_INFO("%f L/h generated.", sensor_data);
 
+    /*
     std::stringstream ss;
-    ss << sensor_data;
+    ss << sensor_data << " L/h";
     msg.data = ss.str();
 
-    ROS_INFO("%s", msg.data.c_str());
+    ROS_INFO("%s", msg.data.str());
+    */
 
-    /**
-     * The publish() function is how you send messages. The parameter
-     * is the message object. The type of this object must agree with the type
-     * given as a template parameter to the advertise<>() call, as was done
-     * in the constructor above.
+    /* Flow rate messges with weights (1,2,3,4,5)
      */
-    chatter_pub.publish(msg);
+    std_msgs::String nil;
+    std::vector<std_msgs::String> msg_vec(5,nil);
+    std::stringstream ss;
+    for (int i = 1; i < 6; i++){
+      ss.str("");
+      ss << (sensor_data*i)/15;
+      msg_vec.at(i-1).data = ss.str();
+    }
+
+    hydro1.publish(msg_vec.at(0));
+    ROS_INFO("Hydro1: %s L/h", msg_vec.at(0).data.c_str());
+    hydro2.publish(msg_vec.at(1));
+    ROS_INFO("Hydro2: %s L/h", msg_vec.at(1).data.c_str());
+    hydro3.publish(msg_vec.at(2));
+    ROS_INFO("Hydro3: %s L/h", msg_vec.at(2).data.c_str());
+    hydro4.publish(msg_vec.at(3));
+    ROS_INFO("Hydro4: %s L/h", msg_vec.at(3).data.c_str());
+    hydro5.publish(msg_vec.at(4));
+    ROS_INFO("Hydro5: %s L/h", msg_vec.at(4).data.c_str());
 
     ros::spinOnce();
 
     loop_rate.sleep();
-    ++count;
   }
 
 

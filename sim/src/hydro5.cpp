@@ -21,7 +21,7 @@ int main(int argc, char **argv)
    * You must call one of the versions of ros::init() before using any other
    * part of the ROS system.
    */
-  ros::init(argc, argv, "listener");
+  ros::init(argc, argv, "hydro5");
 
   /**
    * NodeHandle is the main access point to communications with the ROS system.
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
    * is the number of messages that will be buffered up before beginning to throw
    * away the oldest ones.
    */
-  ros::Subscriber sub = n.subscribe("chatter", 1000, chatterCallback);
+  ros::Subscriber sub = n.subscribe("hydro5_topic", 1000, chatterCallback);
 
   /**
    * ros::spin() will enter a loop, pumping callbacks.  With this version, all
