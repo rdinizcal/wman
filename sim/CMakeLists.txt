@@ -21,25 +21,9 @@ add_executable(dmc src/dmc.cpp)
 target_link_libraries(dmc ${catkin_LIBRARIES})
 add_dependencies(dmc sim_generate_messages_cpp)
 
-add_executable(hydro1 src/hydro1.cpp)
-target_link_libraries(hydro1 ${catkin_LIBRARIES})
-add_dependencies(hydro1 sim_generate_messages_cpp)
-
-add_executable(hydro2 src/hydro2.cpp)
-target_link_libraries(hydro2 ${catkin_LIBRARIES})
-add_dependencies(hydro2 sim_generate_messages_cpp)
-
-add_executable(hydro3 src/hydro3.cpp)
-target_link_libraries(hydro3 ${catkin_LIBRARIES})
-add_dependencies(hydro3 sim_generate_messages_cpp)
-
-add_executable(hydro4 src/hydro4.cpp)
-target_link_libraries(hydro4 ${catkin_LIBRARIES})
-add_dependencies(hydro4 sim_generate_messages_cpp)
-
-add_executable(hydro5 src/hydro5.cpp)
-target_link_libraries(hydro5 ${catkin_LIBRARIES})
-add_dependencies(hydro5 sim_generate_messages_cpp)
+add_executable(hydrometer src/hydrometer.cpp)
+target_link_libraries(hydrometer ${catkin_LIBRARIES})
+add_dependencies(hydrometer sim_generate_messages_cpp)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)

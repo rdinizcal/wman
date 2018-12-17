@@ -1,0 +1,3 @@
+<launch>
+  <node name="hydro1" pkg="sim" type="hydrometer" output="screen" />
+</launch>
