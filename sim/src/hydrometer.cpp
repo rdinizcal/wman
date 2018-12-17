@@ -124,15 +124,13 @@ int change_state (int curr_state) {
 int main(int argc, char **argv) {
 
   ros::init(argc, argv, "hydrometer");
-
   ros::NodeHandle n;
-
   ros::Rate loop_rate(0.1);
 
   srand(time(NULL));
   int curr_state = 0;
   double sensor_data = 0.0;
-  ros::WallTime now;
+  ros::Time now;
   while (ros::ok()) {
     
     /*
@@ -140,7 +138,7 @@ int main(int argc, char **argv) {
      */
     curr_state = change_state(curr_state);
     sensor_data = gen_data(curr_state);
-    now = ros::WallTime::now();
+    now = ros::Time::now();
 
     /*
      * Enviar o dado
