@@ -1,3 +1,5 @@
 <launch>
-  <node name="hydro1" pkg="sim" type="hydrometer" output="screen" />
+  <node name="hydro1" pkg="sim" type="hydrometer"/>
+  <node name="hydro2" pkg="sim" type="hydrometer"/>
+  <node name="server" pkg="sim" type="server" output="screen" />
 </launch>

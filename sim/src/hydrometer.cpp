@@ -1,5 +1,5 @@
 #include "ros/ros.h"
-#include "std_msgs/String.h"
+#include "std_msgs/Float64.h"
 
 #include <sstream>
 #include <vector>
@@ -126,6 +126,7 @@ int main(int argc, char **argv) {
   ros::init(argc, argv, "hydrometer");
   ros::NodeHandle n;
   ros::Rate loop_rate(0.1);
+  ros::Publisher pub = n.advertise<std_msgs::Float64>("hydro_topic", 1000);
 
   srand(time(NULL));
   int curr_state = 0;
@@ -143,6 +144,9 @@ int main(int argc, char **argv) {
     /*
      * Enviar o dado
      */
+    std_msgs::Float64 msg;
+    msg.data = sensor_data;
+    pub.publish(msg);
 
     /*
      * Imprimir o dado
